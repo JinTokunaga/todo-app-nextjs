@@ -5,7 +5,6 @@ import { TodoList } from '@/components/TodoList'
 import { DeletedItems } from '@/components/DeletedItems'
 import { TodoInput } from '@/components/TodoInput'
 import { FilterButtons } from '@/components/FilterButtons'
-import { Header } from '@/components/Header'
 
 export interface Todo {
   id: string
@@ -31,25 +30,16 @@ export default function Home() {
     setMounted(true)
     const savedTodos = localStorage.getItem('todos')
     const savedDeletedTodos = localStorage.getItem('deletedTodos')
-
-    if (savedTodos) {
-      setTodos(JSON.parse(savedTodos))
-    }
-    if (savedDeletedTodos) {
-      setDeletedTodos(JSON.parse(savedDeletedTodos))
-    }
+    if (savedTodos) setTodos(JSON.parse(savedTodos))
+    if (savedDeletedTodos) setDeletedTodos(JSON.parse(savedDeletedTodos))
   }, [])
 
   useEffect(() => {
-    if (mounted) {
-      localStorage.setItem('todos', JSON.stringify(todos))
-    }
+    if (mounted) localStorage.setItem('todos', JSON.stringify(todos))
   }, [todos, mounted])
 
   useEffect(() => {
-    if (mounted) {
-      localStorage.setItem('deletedTodos', JSON.stringify(deletedTodos))
-    }
+    if (mounted) localStorage.setItem('deletedTodos', JSON.stringify(deletedTodos))
   }, [deletedTodos, mounted])
 
   const addTodo = (text: string) => {
@@ -57,7 +47,7 @@ export default function Home() {
       id: `${Date.now()}-${Math.random()}`,
       text,
       completed: false,
-      createdAt: new Date().toISOString()
+      createdAt: new Date().toISOString(),
     }
     setTodos([newTodo, ...todos])
   }
@@ -65,37 +55,27 @@ export default function Home() {
   const toggleTodo = (id: string) => {
     setTodos(todos.map(todo =>
       todo.id === id
-        ? {
-            ...todo,
-            completed: !todo.completed,
-            completedAt: !todo.completed ? new Date().toISOString() : undefined
-          }
+        ? { ...todo, completed: !todo.completed, completedAt: !todo.completed ? new Date().toISOString() : undefined }
         : todo
     ))
   }
 
   const deleteTodo = (id: string) => {
-    const todoToDelete = todos.find(todo => todo.id === id)
-    if (todoToDelete) {
-      const deletedTodo: DeletedTodo = {
-        ...todoToDelete,
-        deletedAt: new Date().toISOString()
-      }
-      setDeletedTodos([deletedTodo, ...deletedTodos])
-      setTodos(todos.filter(todo => todo.id !== id))
+    const todo = todos.find(t => t.id === id)
+    if (todo) {
+      setDeletedTodos([{ ...todo, deletedAt: new Date().toISOString() }, ...deletedTodos])
+      setTodos(todos.filter(t => t.id !== id))
     }
   }
 
-  const restoreTodo = (deletedTodo: DeletedTodo) => {
-    const { deletedAt, ...todo } = deletedTodo
+  const restoreTodo = (deleted: DeletedTodo) => {
+    const { deletedAt, ...todo } = deleted
     setTodos([todo, ...todos])
-    setDeletedTodos(deletedTodos.filter(t => t.id !== deletedTodo.id))
+    setDeletedTodos(deletedTodos.filter(t => t.id !== deleted.id))
   }
 
   const clearDeletedHistory = () => {
-    if (confirm('削除履歴をすべてクリアしますか？この操作は取り消せません。')) {
-      setDeletedTodos([])
-    }
+    setDeletedTodos([])
   }
 
   const filteredTodos = todos.filter(todo => {
@@ -104,24 +84,67 @@ export default function Home() {
     return true
   })
 
-  if (!mounted) {
-    return null
-  }
+  const activeCount = todos.filter(t => !t.completed).length
+  const completedCount = todos.filter(t => t.completed).length
+
+  if (!mounted) return null
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
-      <div className="container mx-auto max-w-4xl px-4 py-8">
-        <Header />
+    <div className="min-h-screen" style={{ background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' }}>
+      <div style={{ maxWidth: '680px', margin: '0 auto', padding: '48px 24px' }}>
 
-        <div className="mb-8 rounded-2xl bg-white p-6 shadow-lg">
-          <TodoInput onAdd={addTodo} />
-          <FilterButtons
-            filter={filter}
-            setFilter={setFilter}
-            todos={todos}
-          />
+        {/* Header */}
+        <div style={{ textAlign: 'center', marginBottom: '40px' }}>
+          <h1 style={{
+            fontSize: '48px',
+            fontWeight: '800',
+            color: '#ffffff',
+            letterSpacing: '-1px',
+            marginBottom: '8px',
+            textShadow: '0 2px 4px rgba(0,0,0,0.2)'
+          }}>
+            ✅ TODO App
+          </h1>
+          <p style={{ color: 'rgba(255,255,255,0.8)', fontSize: '15px' }}>
+            タスクを管理して、毎日を効率よく
+          </p>
         </div>
 
+        {/* Stats */}
+        <div style={{ display: 'flex', gap: '12px', marginBottom: '24px' }}>
+          {[
+            { label: '合計', value: todos.length, color: '#6366f1' },
+            { label: '未完了', value: activeCount, color: '#f59e0b' },
+            { label: '完了', value: completedCount, color: '#10b981' },
+          ].map(({ label, value, color }) => (
+            <div key={label} style={{
+              flex: 1,
+              background: 'rgba(255,255,255,0.15)',
+              backdropFilter: 'blur(8px)',
+              borderRadius: '16px',
+              padding: '16px',
+              textAlign: 'center',
+              border: '1px solid rgba(255,255,255,0.25)'
+            }}>
+              <div style={{ fontSize: '28px', fontWeight: '700', color: '#ffffff' }}>{value}</div>
+              <div style={{ fontSize: '13px', color: 'rgba(255,255,255,0.8)' }}>{label}</div>
+            </div>
+          ))}
+        </div>
+
+        {/* Main card */}
+        <div style={{
+          background: '#ffffff',
+          borderRadius: '24px',
+          padding: '28px',
+          boxShadow: '0 20px 60px rgba(0,0,0,0.2)',
+          marginBottom: '24px',
+        }}>
+          <TodoInput onAdd={addTodo} />
+          <FilterButtons filter={filter} setFilter={setFilter} todos={todos} />
+        </div>
+
+        {/* Todo List */}
         <TodoList
           todos={filteredTodos}
           filter={filter}
@@ -129,6 +152,7 @@ export default function Home() {
           onDelete={deleteTodo}
         />
 
+        {/* Deleted History */}
         {deletedTodos.length > 0 && (
           <DeletedItems
             deletedTodos={deletedTodos}

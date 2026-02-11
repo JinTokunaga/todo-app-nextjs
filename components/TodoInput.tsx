@@ -16,20 +16,56 @@ export function TodoInput({ onAdd }: TodoInputProps) {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="mb-6">
-      <div className="flex gap-3">
+    <form onSubmit={handleSubmit} style={{ marginBottom: '20px' }}>
+      <div style={{ display: 'flex', gap: '10px' }}>
         <input
           type="text"
           value={inputValue}
           onChange={(e) => setInputValue(e.target.value)}
           placeholder="新しいタスクを入力..."
-          className="flex-1 rounded-lg border-2 border-gray-200 px-4 py-3 text-gray-800 placeholder-gray-400 transition-all focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200"
+          style={{
+            flex: 1,
+            padding: '14px 18px',
+            fontSize: '15px',
+            border: '2px solid #e5e7eb',
+            borderRadius: '12px',
+            outline: 'none',
+            color: '#111827',
+            background: '#f9fafb',
+            transition: 'border-color 0.2s, box-shadow 0.2s',
+          }}
+          onFocus={e => {
+            e.target.style.borderColor = '#667eea'
+            e.target.style.boxShadow = '0 0 0 3px rgba(102,126,234,0.15)'
+            e.target.style.background = '#ffffff'
+          }}
+          onBlur={e => {
+            e.target.style.borderColor = '#e5e7eb'
+            e.target.style.boxShadow = 'none'
+            e.target.style.background = '#f9fafb'
+          }}
         />
         <button
           type="submit"
-          className="rounded-lg bg-gradient-to-r from-blue-600 to-purple-600 px-6 py-3 font-semibold text-white shadow-md transition-all hover:shadow-lg hover:scale-105 active:scale-95"
+          style={{
+            padding: '14px 24px',
+            fontSize: '15px',
+            fontWeight: '600',
+            color: '#ffffff',
+            background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+            border: 'none',
+            borderRadius: '12px',
+            cursor: 'pointer',
+            whiteSpace: 'nowrap',
+            boxShadow: '0 4px 12px rgba(102,126,234,0.4)',
+            transition: 'opacity 0.2s, transform 0.1s',
+          }}
+          onMouseEnter={e => (e.currentTarget.style.opacity = '0.9')}
+          onMouseLeave={e => (e.currentTarget.style.opacity = '1')}
+          onMouseDown={e => (e.currentTarget.style.transform = 'scale(0.97)')}
+          onMouseUp={e => (e.currentTarget.style.transform = 'scale(1)')}
         >
-          追加
+          ＋ 追加
         </button>
       </div>
     </form>

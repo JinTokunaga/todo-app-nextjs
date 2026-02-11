@@ -11,63 +11,140 @@ export function DeletedItems({ deletedTodos, onRestore, onClearHistory }: Delete
   const [isExpanded, setIsExpanded] = useState(false)
 
   const formatDate = (dateString: string) => {
-    const date = new Date(dateString)
-    return date.toLocaleString('ja-JP', {
+    return new Date(dateString).toLocaleString('ja-JP', {
       month: 'short',
       day: 'numeric',
       hour: '2-digit',
-      minute: '2-digit'
+      minute: '2-digit',
     })
   }
 
   return (
-    <div className="mt-8 rounded-2xl bg-white p-6 shadow-lg">
-      <div className="mb-4 flex items-center justify-between">
+    <div style={{
+      marginTop: '24px',
+      background: 'rgba(255,255,255,0.9)',
+      borderRadius: '20px',
+      padding: '20px 24px',
+      boxShadow: '0 4px 20px rgba(0,0,0,0.1)',
+    }}>
+      {/* Header */}
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
         <button
           onClick={() => setIsExpanded(!isExpanded)}
-          className="flex items-center gap-2 text-xl font-bold text-gray-700 transition-colors hover:text-gray-900"
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px',
+            background: 'none',
+            border: 'none',
+            cursor: 'pointer',
+            padding: 0,
+          }}
         >
-          <span className={`transition-transform ${isExpanded ? 'rotate-90' : ''}`}>
-            ▶
+          <span style={{
+            fontSize: '18px',
+            fontWeight: '700',
+            color: '#374151',
+          }}>
+            🗑️ 削除履歴
           </span>
-          削除履歴
-          <span className="text-sm font-normal text-gray-500">
-            ({deletedTodos.length}件)
+          <span style={{
+            padding: '2px 8px',
+            borderRadius: '20px',
+            background: '#fee2e2',
+            color: '#ef4444',
+            fontSize: '13px',
+            fontWeight: '600',
+          }}>
+            {deletedTodos.length}件
+          </span>
+          <span style={{
+            fontSize: '14px',
+            color: '#9ca3af',
+            marginLeft: '4px',
+            transition: 'transform 0.2s',
+            display: 'inline-block',
+            transform: isExpanded ? 'rotate(180deg)' : 'rotate(0deg)',
+          }}>
+            ▼
           </span>
         </button>
-        {deletedTodos.length > 0 && (
-          <button
-            onClick={onClearHistory}
-            className="rounded-lg bg-gray-100 px-4 py-2 text-sm font-semibold text-gray-600 transition-all hover:bg-gray-200"
-          >
-            履歴をクリア
-          </button>
-        )}
+
+        <button
+          onClick={onClearHistory}
+          style={{
+            padding: '6px 14px',
+            borderRadius: '8px',
+            border: 'none',
+            background: '#f3f4f6',
+            color: '#6b7280',
+            fontSize: '13px',
+            fontWeight: '500',
+            cursor: 'pointer',
+          }}
+          onMouseEnter={e => (e.currentTarget.style.background = '#e5e7eb')}
+          onMouseLeave={e => (e.currentTarget.style.background = '#f3f4f6')}
+        >
+          すべてクリア
+        </button>
       </div>
 
+      {/* List */}
       {isExpanded && (
-        <div className="space-y-2">
+        <div style={{ marginTop: '16px' }}>
           {deletedTodos.map((todo) => (
             <div
               key={todo.id}
-              className="group flex items-start gap-4 rounded-lg bg-gray-50 p-4 transition-all hover:bg-gray-100"
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '12px',
+                padding: '12px 16px',
+                borderRadius: '12px',
+                background: '#fafafa',
+                border: '1px solid #f3f4f6',
+                marginBottom: '8px',
+              }}
             >
-              <div className="flex-1">
-                <p className="font-medium text-gray-600 line-through">
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <p style={{
+                  fontSize: '15px',
+                  color: '#9ca3af',
+                  textDecoration: 'line-through',
+                  marginBottom: '4px',
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                  whiteSpace: 'nowrap',
+                }}>
                   {todo.text}
                 </p>
-                <div className="mt-1 flex gap-3 text-xs text-gray-500">
-                  <span>削除: {formatDate(todo.deletedAt)}</span>
+                <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
+                  <span style={{ fontSize: '12px', color: '#d1d5db' }}>
+                    削除: {formatDate(todo.deletedAt)}
+                  </span>
                   {todo.completed && (
-                    <span className="text-green-600">完了済み</span>
+                    <span style={{ fontSize: '12px', color: '#10b981' }}>完了済み</span>
                   )}
                 </div>
               </div>
               <button
                 onClick={() => onRestore(todo)}
-                className="rounded-lg bg-blue-100 px-4 py-2 text-sm font-semibold text-blue-600 opacity-0 transition-all hover:bg-blue-200 group-hover:opacity-100"
+                style={{
+                  flexShrink: 0,
+                  padding: '6px 14px',
+                  borderRadius: '8px',
+                  border: 'none',
+                  background: '#ede9fe',
+                  color: '#7c3aed',
+                  fontSize: '13px',
+                  fontWeight: '600',
+                  cursor: 'pointer',
+                  transition: 'background 0.2s',
+                }}
+                onMouseEnter={e => (e.currentTarget.style.background = '#ddd6fe')}
+                onMouseLeave={e => (e.currentTarget.style.background = '#ede9fe')}
               >
-                復元
+                ↩ 復元
               </button>
             </div>
           ))}

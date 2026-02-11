@@ -7,28 +7,46 @@ interface FilterButtonsProps {
 }
 
 export function FilterButtons({ filter, setFilter, todos }: FilterButtonsProps) {
-  const activeCount = todos.filter(t => !t.completed).length
-  const completedCount = todos.filter(t => t.completed).length
-
   const buttons: { label: string; value: FilterType; count: number }[] = [
     { label: 'すべて', value: 'all', count: todos.length },
-    { label: '未完了', value: 'active', count: activeCount },
-    { label: '完了', value: 'completed', count: completedCount }
+    { label: '未完了', value: 'active', count: todos.filter(t => !t.completed).length },
+    { label: '完了済み', value: 'completed', count: todos.filter(t => t.completed).length },
   ]
 
   return (
-    <div className="flex gap-2">
+    <div style={{ display: 'flex', gap: '8px' }}>
       {buttons.map(({ label, value, count }) => (
         <button
           key={value}
           onClick={() => setFilter(value)}
-          className={`flex-1 rounded-lg px-4 py-2 font-medium transition-all ${
-            filter === value
-              ? 'bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-md'
-              : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-          }`}
+          style={{
+            flex: 1,
+            padding: '10px 8px',
+            fontSize: '14px',
+            fontWeight: '600',
+            borderRadius: '10px',
+            border: 'none',
+            cursor: 'pointer',
+            transition: 'all 0.2s',
+            background: filter === value
+              ? 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'
+              : '#f3f4f6',
+            color: filter === value ? '#ffffff' : '#6b7280',
+            boxShadow: filter === value ? '0 4px 10px rgba(102,126,234,0.35)' : 'none',
+          }}
         >
-          {label} <span className="ml-1 text-sm opacity-80">({count})</span>
+          {label}
+          <span style={{
+            marginLeft: '6px',
+            padding: '2px 7px',
+            borderRadius: '20px',
+            fontSize: '12px',
+            fontWeight: '700',
+            background: filter === value ? 'rgba(255,255,255,0.25)' : '#e5e7eb',
+            color: filter === value ? '#ffffff' : '#6b7280',
+          }}>
+            {count}
+          </span>
         </button>
       ))}
     </div>
